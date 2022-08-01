@@ -1,0 +1,71 @@
+
+To have a web app deployed to glassfish using the H2 database
+
+1) Ensure that Glassfish has started. If not, just do the usual 
+	
+	$ asadmin restart-domain
+	
+2) From a web browser, login to the Glassfish admin console app
+
+	If glassfish is running locally, it's usually localhost:4848
+	
+3) create glassfish JDBC Connection Pool (ADMIN CONSOLE)
+
+	> login to the glassfish console (if local, browse to localhost:4848)
+	> Once logged in, go to Resources > JDBC > JDBC Connection Pools
+	> Click the New... button
+	> Enter the pool name: 		h2JPA
+	> Database Driver Vendor: H2 (won't be listed, just enter it)
+	> click Next
+	
+	> enter org.h2.jdbcx.JdbcDataSource for the DataSource class name
+	> if satisfied with the default attributes, scroll down to Additional Properties
+	> Should only need the following for a basic setup:
+
+		> url = jdbc:h2:tcp://localhost:9092//opt/db/h2/bin/CERBERUS_MAIN;AUTO_SERVER=true
+		> user = cerberus_user
+		> password = IDKFAIDDQD
+		
+		NOTE: the url is the absolute path to the database file (on Windows it will be different
+		
+3a) create Glassfish JDBC Connection Pool (COMMAND LINE)
+
+	Sometimes you cannot access the admin console, in this case the following command will work:
+	
+	$ asadmin create-jdbc-connection-pool --datasourceclassname org.h2.jdbcx.JdbcDataSource --restype javax.sql.DataSource 
+		--property user=cerberus_user:password=IDKFAIDDQD:url="jdbc\:h2\:tcp://localhost\:9092//opt/db/h2/bin/CERBERUS_MAIN;AUTO_SERVER\=true"
+		
+	notice how the colons and the equals are escaped in the URL key entry
+	This will create one specifically for an h2 db driver
+	
+	NOTE: --datasourceclassname used to be --datasource (before v4.1)
+	
+	It should then prompt you for a connection pool ID, use the name "h2JPA"
+	
+
+4) create glassfish JDBC Resource (ADMIN CONSOLE)
+
+	Step3 is absolutely REQUIRED before this step
+
+	> Goto Resources > JDBC > JDBC Resources
+	> click New...
+	> give a name of jdbc/j2JPA
+	> select the Pool you just created in step 3
+	> click Save/OK
+	
+4a) create glassfish JDBC Resource (COMMAND LINE)
+
+	$ asadmin create-jdbc-resource --connectionpoolid h2JPA jdbc/h2JPA
+	
+	notice the id of the connection pool created in step 3
+	
+5) If the database is up an running, try to PING it 
+	go back to the JDBC connection pool sub menu again and click on the h2JPA item
+	click the PING button
+	
+	If it's running, and you get this:
+	"Class name is wrong or classpath is not set for : org.h2.jdbcx.JdbcDataSource"
+	
+	It means you need to put the h2 jar in the /glassfish/domains/domains1/lib/ext directory
+	Copy this to the directory
+	Restart Glassfish and try again

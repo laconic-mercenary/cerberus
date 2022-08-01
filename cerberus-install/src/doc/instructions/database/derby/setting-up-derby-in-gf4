@@ -1,0 +1,100 @@
+
+These steps will show how to use the Java DB / Derby in-memory database that comes with 
+glassfish server.
+
+The basic steps are:
+1) start glassfish 
+2) start derby
+3) create glassfish JDBC Connection Pool
+4) create glassfish JDBC Resource
+5) restart glassfish
+6) ensure connectivity by PINGing the database
+
+
+1) start glassfish
+
+	> use the asadmin executable to manage glassfish 
+
+	$ asadmin start-domain
+	OR
+	$ adadmin restart-domain
+
+2) start derby
+
+	> derby does not automatically get started by glassfish once it's launched
+	> derby / java db needs to be restarted manually
+	> can still use the asadmin command
+
+	$ asadmin start-database
+
+3) create glassfish JDBC Connection Pool
+
+	> login to the glassfish console (if local, browse to localhost:4848)
+	> Once logged in, go to Resources > JDBC > JDBC Connection Pools
+	> Click the New... button
+	> Enter the pool name
+	> for Resource Type: find DataSource
+	> Database Driver Vendor: Derby
+	> click Next
+	
+	> If satisfied with the default attributes, scroll down to Additional Properties
+	> At least have the following:
+	
+		> User = <whatever>
+		> DatabaseName = <whatever>
+		> Password = <whatever>
+		> ConnectionAttributes = ;create=true
+		> PortNumber = 1527
+
+4) create glassfish JDBC Resource
+
+	> Goto Resources > JDBC > JDBC Resources
+	> click New...
+	> select the Pool you just created in step 3
+	> click Save/OK
+
+5) restart glassfish
+
+	$ asadmin restart-domain
+
+6) ensure connectivity by PINGing the database
+
+	> log back in to the glassfish console
+	> Once logged in, go to Resources > JDBC > JDBC Connection Pools
+	> select the Connection Pool created in step 3
+	> click the Ping button - ensure it succeeds
+	
+7)	you can now setup your persistence.xml
+
+If using EclipseLink:
+
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0"
+	xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+	<persistence-unit name="derbyJPA" transaction-type="JTA"> <!-- JTA as opposed to RESOURCE_LOCAL if using container -->
+
+		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+
+		<jta-data-source>jdbc/<CONNECTION POOL NAME HERE></jta-data-source>
+
+		<class>ENTITY 1 goes here</class>
+		<class>ENTITY 2 goes here</class>
+		...etc...
+
+		<exclude-unlisted-classes>false</exclude-unlisted-classes>
+
+		<properties>
+			<!-- EclipseLink specific properties -->
+			<property name="eclipselink.ddl-generation" value="drop-and-create-tables" />
+			<property name="eclipselink.debug" value="ALL" />
+			<property name="eclipselink.weaving" value="static" />
+			<property name="eclipselink.logging.level" value="INFO" />
+			<property name="eclipselink.logging.level.sql" value="INFO" />
+			<property name="eclipselink.logging.level.cache" value="INFO" />
+			<property name="javax.persistence.jdbc.user" value="USER NAME SPECIFIED IN THE PROPERTIES OF THE CONNECTION POOL" />
+			<property name="javax.persistence.jdbc.password" value="PASSWORD SPECIFIED IN THE PROPERTIES OF THE CONNECTION POOL" />
+		</properties>
+
+	</persistence-unit>
+</persistence>

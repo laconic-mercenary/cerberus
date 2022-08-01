@@ -1,0 +1,66 @@
+
+1) Place the h2 jar file in a directory where cerberus can be expected to find it.
+	This jar file can be found in the src/bin directory in the cerberus-install project.
+	For example: /opt/db/h2, or C:\opt\db\h2
+	
+	NOTE NOTE NOTE
+	
+	The directory you put it in is IMPORTANT as this directory is hard-coded in several of the 
+	startup scripts, and from within the Glassfish connection pool to h2.
+	
+	Update the following if necessary:	
+	- .bat scripts
+	- .sh scripts
+	- GF connection pool (see below)
+		
+2)	UNIX:
+
+	In unix, the h2 server must run as a service (because typically a unix server does not have a 
+	window manager - it is only shell based - and the h2 server is a blocking process if launched by itself).  
+
+	Take the init script from the cerberus-install project in /src/scripts 
+	the init script's filename is 'h2' (no extension - though it's actually a shell script)
+	and place it in the /etc/init.d directory
+	Full path to the file should look like /etc/init.d/h2
+	
+	This will allow us to run the h2 database as a background process. 
+	You can now run commands like
+	
+	$ sudo service h2 init
+	$ sudo service h2 start
+	$ sudo service h2 stop
+	$ sudo service h2 zap 
+	
+	(zap kills the service)
+		
+3) If not done so already, create a connection pool in glassfish 
+	You can find these instructions in the creating-glassfish-connection-pool tutorial file
+	in this directory.
+	
+4) Place the h2*.jar file in the <GF_DIR>/glassfish/domains/domain1/lib dir
+	Also the lib/ext directory (may not be necessary)
+
+5) UNIX:
+	
+	The shell scripts pretty much do everything for you. The only thing it currently does not do 
+	is delete the database file that h2 creates - which may need to be done after shutting down the 
+	h2 service. 
+	
+	When you run the FULL_STARTUP.sh script, the following will occur
+	
+	> stop glassfish
+	> launch h2 service
+	> create the schema (schema.sql) for cerberus
+	> populate the tables (loaders.sql)
+	> start glassfish
+	> deploy cerberus
+	
+	WINDOWS:
+	
+	1_db_start.bat will launch the h2 server as a blocking process (just leave the window open)
+	2_db_schema.bat will create the tables
+	3_db_loaders.bat will load the tables
+	
+	just run them in that order
+	
+	(then you'll run the 4_server_start and 5_cerberus_deploy batch files afterward) 

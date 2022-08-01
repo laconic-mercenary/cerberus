@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:growl id="motion-launch-growl" showDetail="true" sticky="false"></p:growl>
+
+	<h:outputStylesheet>
+		.pad-right {
+			padding-right: 2em;
+		}
+		.pad-left {
+			padding-left: 2em;
+		}
+	</h:outputStylesheet>
+
+	<h:panelGroup id="motion-console-group" layout="block">
+		<h:panelGrid id="motion-console-table" columns="4">
+			<p:outputLabel value="Snapshots To Display:" styleClass="pad-right"></p:outputLabel>
+			<p:outputLabel value="Current Snaphots:" styleClass="pad-right"></p:outputLabel>
+			<p:outputLabel value="Delete On Transfer?" styleClass="pad-right"></p:outputLabel>
+			<h:outputText />
+
+			<p:spinner id="snapshots-to-display-spinner"
+				max="#{motionSnapshotDialogController.snapshotBean.maxAllowedSnapshotXfers}"
+				min="#{motionSnapshotDialogController.snapshotBean.minAllowedSnapshotXfers}"
+				size="6"
+				value="#{motionSnapshotDialogController.snapshotBean.snapshotsToMove}"></p:spinner>
+			<p:outputLabel id="current-snapshot-count-label"
+				value="#{motionSnapshotDialogController.snapshotBean.totalSnapshots}"></p:outputLabel>
+			<p:selectOneRadio id="delete-on-xfer-radio"
+				value="#{motionSnapshotDialogController.snapshotBean.deleteOnXfer}">
+				<f:selectItem itemLabel="Yes" itemValue="#{true}" />
+				<f:selectItem itemLabel="No" itemValue="#{false}" />
+			</p:selectOneRadio>
+
+			<p:commandButton id="submit-md-form-button" value="Display"
+				action="#{motionSnapshotDialogController.submitAction}"
+				update="motion-launch-growl,current-snapshot-count-label,delete-on-xfer-radio">
+			</p:commandButton>
+		</h:panelGrid>
+	</h:panelGroup>
+
+</ui:composition>

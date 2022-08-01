@@ -1,0 +1,24 @@
+body {
+	background: black;
+}
+
+#banner {
+	width: 100%;
+}
+
+#main-wrapper {
+	width: 85%;
+	margin: auto;
+}
+
+[id$=image-panel-grid] {
+	margin: auto;
+}
+
+#footer-wrapper {
+	text-align: center;
+}
+
+.light-label {
+	color: white;
+}

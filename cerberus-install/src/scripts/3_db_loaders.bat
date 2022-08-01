@@ -1,0 +1,1 @@
+java -cp D:\opt\db\h2\bin\h2-1.3.176.jar org.h2.tools.RunScript -user cerberus_user -password IDKFAIDDQD -url jdbc:h2:tcp://localhost:9092/D:\opt\db\CERBERUS_MAIN -script loaders.windows.sql

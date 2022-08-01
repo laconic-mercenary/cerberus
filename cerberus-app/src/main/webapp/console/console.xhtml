@@ -1,0 +1,227 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="../common/layout.inc.xhtml">
+	<ui:define name="content">
+
+		<h:outputStylesheet>
+			.highlight-image {
+				box-shadow: 0px 0px 35px #E4DC21;
+			}
+		</h:outputStylesheet>
+
+		<ui:param name="IMAGE_DIMENSION" value="250"></ui:param>
+
+		<h:outputScript library="scripts" name="console.js"></h:outputScript>
+
+		<!-- the idle time of the p socket is around 300 seconds or so -->
+		<p:idleMonitor timeout="300000" onidle="PF('idleDialog').show()"
+			onactive="PF('idleDialog').hide()" />
+
+		<p:dialog header="Session Timeout" resizable="false"
+			widgetVar="idleDialog" modal="true" width="400">
+			<p:outputLabel value="Session may have expired, please refresh." />
+		</p:dialog>
+
+		<h:panelGroup id="main-wrapper">
+			<h:panelGroup id="image-update-wrapper">
+				<h:form id="image-update-form">
+
+					<p:growl id="console-growl" showDetail="true" sticky="false" />
+
+					<p:remoteCommand name="onPingRX"
+						actionListener="#{consoleController.notifyUserPingRx()}"
+						update="client-list-panel,console-growl,:motion-console-form:current-snapshot-count-label" />
+
+					<p:remoteCommand name="onLoad" update="client-list-panel"></p:remoteCommand>
+
+					<p:socket channel="#{imageNotificationGateway.websocketEndpoint}"
+						onMessage="handleMessage" onClose="Logger.log('Socket CLOSE')"
+						onOpen="Logger.log('Socket OPEN')"
+						onReconnect="Logger.log('Socket RECONNECT')"
+						onTransportFailure="Logger.log('Socket TRANSPORT FAILURE')"
+						onError="Logger.log('Socket ERROR')">
+					</p:socket>
+
+					<!-- can't use the {resource[audio:beep.mp3]}
+					for some reason it triggers once, then never again
+					but using the actual path to it WORKS 
+					 -->
+					<script type="text/javascript">
+						$(document)
+								.ready(
+										function() {
+											onLoad();
+											AudioManager.resource = "/cerberus/resources/audio/beep.mp3";
+											AudioManager.loadBeep();
+										});
+
+						function handleMessage(data) {
+							if (ConsoleManager.DEBUG) {
+								Logger.log('handleMessage() called');
+							}
+							if (ConsoleManager.isPing(data)) {
+								if (ConsoleManager.DEBUG) {
+									Logger.log('RX PING');
+								}
+								if (!StreamManager.isStreaming()) {
+									onPingRX();
+								}
+							} else if (ConsoleManager.isMotion(data)) {
+								if (ConsoleManager.DEBUG) {
+									Logger.log('RX MOTION');
+								}
+								MotionService.handleMotion(data);
+								AudioManager.playBeep();
+							} else {
+								if (ConsoleManager.DEBUG) {
+									Logger.log('RX IMAGE');
+								}
+								ConsoleManager.setNextImg(data);
+							}
+						}
+					</script>
+
+					<p:panel header="Current Feed">
+						<p:panelGrid id="image-panel-grid" columns="3">
+							<h:graphicImage id="image-display-1" height="#{IMAGE_DIMENSION}"
+								width="#{IMAGE_DIMENSION}" styleClass="display nxt-img"
+								url="image/" library="img" name="default.jpg">
+							</h:graphicImage>
+							<h:graphicImage id="image-display-2" height="#{IMAGE_DIMENSION}"
+								width="#{IMAGE_DIMENSION}" styleClass="display" url="image/"
+								library="img" name="default.jpg">
+							</h:graphicImage>
+							<h:graphicImage id="image-display-3" height="#{IMAGE_DIMENSION}"
+								width="#{IMAGE_DIMENSION}" styleClass="display" url="image/"
+								library="img" name="default.jpg">
+							</h:graphicImage>
+							<h:graphicImage id="image-display-4" height="#{IMAGE_DIMENSION}"
+								width="#{IMAGE_DIMENSION}" styleClass="display" url="image/"
+								library="img" name="default.jpg">
+							</h:graphicImage>
+							<h:graphicImage id="image-display-5" height="#{IMAGE_DIMENSION}"
+								width="#{IMAGE_DIMENSION}" styleClass="display" url="image/"
+								library="img" name="default.jpg">
+							</h:graphicImage>
+							<h:graphicImage id="image-display-6" height="#{IMAGE_DIMENSION}"
+								width="#{IMAGE_DIMENSION}" styleClass="display" url="image/"
+								library="img" name="default.jpg">
+							</h:graphicImage>
+							<h:graphicImage id="image-display-7" height="#{IMAGE_DIMENSION}"
+								width="#{IMAGE_DIMENSION}" styleClass="display" url="image/"
+								library="img" name="default.jpg">
+							</h:graphicImage>
+							<h:graphicImage id="image-display-8" height="#{IMAGE_DIMENSION}"
+								width="#{IMAGE_DIMENSION}" styleClass="display" url="image/"
+								library="img" name="default.jpg">
+							</h:graphicImage>
+							<h:graphicImage id="image-display-9" height="#{IMAGE_DIMENSION}"
+								width="#{IMAGE_DIMENSION}" styleClass="display" url="image/"
+								library="img" name="default.jpg">
+							</h:graphicImage>
+							<h:graphicImage id="image-display-10" height="#{IMAGE_DIMENSION}"
+								width="#{IMAGE_DIMENSION}" styleClass="display" url="image/"
+								library="img" name="default.jpg">
+							</h:graphicImage>
+							<h:graphicImage id="image-display-11" height="#{IMAGE_DIMENSION}"
+								width="#{IMAGE_DIMENSION}" styleClass="display" url="image/"
+								library="img" name="default.jpg">
+							</h:graphicImage>
+							<h:graphicImage id="image-display-12" height="#{IMAGE_DIMENSION}"
+								width="#{IMAGE_DIMENSION}" styleClass="display" url="image/"
+								library="img" name="default.jpg">
+							</h:graphicImage>
+						</p:panelGrid>
+						<h:panelGroup id="misc-block" layout="block"
+							style="text-align: center;">
+							<br />
+							<p:outputLabel styleClass="light-label"
+								value="To download an image, Right Click and select Save As...">
+							</p:outputLabel>
+							<br />
+							<br />
+							<p:commandButton id="clear-images-button" value="Clear Images"
+								type="button" onclick="ConsoleManager.clearImages();">
+							</p:commandButton>
+						</h:panelGroup>
+					</p:panel>
+
+					<p:outputPanel id="client-list-panel">
+						<h:panelGroup id="client-list-group">
+							<p:panel header="Client Listings">
+								<p:dataTable id="client-listings"
+									value="#{pingTrackerBean.pingList}" var="pingEntry">
+
+									<p:column headerText="Images" style="width: 15%">
+										<p:commandButton value="Get Latest" styleClass="image-invoke"
+											action="#{consoleController.requestImagesAction(pingEntry)}">
+											<p:tooltip
+												value="Sends request for a the latest image from the specified client."
+												showEffect="clip" hideEffect="explode" />
+										</p:commandButton>
+									</p:column>
+
+									<p:column headerText="Address" style="width: 19%">
+										<p:outputLabel styleClass="address-entry"
+											value="#{pingEntry.address}"></p:outputLabel>
+									</p:column>
+
+									<p:column headerText="Name" style="width: 28%">
+										<p:outputLabel styleClass="name-entry"
+											value="#{pingEntry.machineName}"></p:outputLabel>
+									</p:column>
+
+									<p:column headerText="Date Rx" style="width: 17%">
+										<p:outputLabel
+											value="#{pingTrackerBean.toDateFormat(pingEntry.pingReceivedTime)}"></p:outputLabel>
+									</p:column>
+
+									<p:column headerText="Stream" style="width: 10%">
+										<h:selectBooleanCheckbox styleClass="stream-invoke"
+											onclick="StreamManager.toggle($(this).is(':checked'), $(this))">
+											<p:tooltip
+												value="Requests latest image from client at an interval."
+												showEffect="clip" hideEffect="explode" />
+										</h:selectBooleanCheckbox>
+									</p:column>
+
+									<p:column headerText="Motion" style="width: 10%">
+										<span class="motion-entry-wrapper"> <p:graphicImage
+												styleClass="motion-entry" style="visibility: hidden;"
+												library="img" name="led.gif"></p:graphicImage>
+										</span>
+									</p:column>
+								</p:dataTable>
+							</p:panel>
+						</h:panelGroup>
+					</p:outputPanel>
+				</h:form>
+				<h:panelGroup>
+					<p:panel id="motion-detection-launch-panel"
+						header="Motion Detection Snapshots">
+						<h:panelGroup>
+							<h:form id="motion-console-form">
+								<ui:include src="../modal/motion.xhtml"></ui:include>
+							</h:form>
+						</h:panelGroup>
+					</p:panel>
+				</h:panelGroup>
+				<h:panelGroup layout="block">
+					<p:panel id="settings-panel" header="Settings">
+						<h:panelGroup layout="block"
+							style="width: 100%; text-align: center;">
+							<h:form id="nav-settings-form">
+								<p:commandButton id="nav-settings-button" value="View Settings"
+									ajax="false" action="settings/index.xhtml?faces-redirect=true" />
+							</h:form>
+						</h:panelGroup>
+					</p:panel>
+				</h:panelGroup>
+			</h:panelGroup>
+		</h:panelGroup>
+	</ui:define>
+</ui:composition>

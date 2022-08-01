@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	version="3.0">
+	<display-name>cerberus2</display-name>
+	<welcome-file-list>
+		<welcome-file>index.xhtml</welcome-file>
+	</welcome-file-list>
+	<context-param>
+		<param-name>javax.faces.STATE_SAVING_METHOD</param-name>
+		<param-value>server</param-value>
+	</context-param>
+	<context-param>
+		<param-name>javax.faces.CLIENT_WINDOW_MODE</param-name>
+		<param-value>url</param-value>
+	</context-param>
+	<context-param>
+		<param-name>javax.faces.FACELETS_SKIP_COMMENTS</param-name>
+		<param-value>true</param-value>
+	</context-param>
+	<context-param>
+		<param-name>primefaces.THEME</param-name>
+		<param-value>dark-hive</param-value>
+	</context-param>
+
+	<listener>
+		<listener-class>cerberus.app.CerberusMain</listener-class>
+	</listener>
+
+	<error-page>
+		<location>/err/error.xhtml</location>
+	</error-page>
+
+	<servlet>
+		<servlet-name>Faces Servlet</servlet-name>
+		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Faces Servlet</servlet-name>
+		<url-pattern>*.xhtml</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Faces Servlet</servlet-name>
+		<url-pattern>*.jsf</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>Push Servlet</servlet-name>
+		<servlet-class>org.primefaces.push.PushServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+		<async-supported>true</async-supported>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>Push Servlet</servlet-name>
+		<url-pattern>/primepush/*</url-pattern>
+	</servlet-mapping>
+
+	<session-config>
+		<session-timeout>35</session-timeout>
+		<cookie-config>
+			<http-only>true</http-only>
+		</cookie-config>
+	</session-config>
+
+	<security-constraint>
+		<display-name>AuthorizationConstraint</display-name>
+		<web-resource-collection>
+			<web-resource-name>AuthenticationResource</web-resource-name>
+			<url-pattern>/*</url-pattern>
+			<http-method>GET</http-method>
+			<http-method>POST</http-method>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>Authorized</role-name>
+		</auth-constraint>
+		<user-data-constraint>
+			<transport-guarantee>NONE</transport-guarantee>
+		</user-data-constraint>
+	</security-constraint>
+	<login-config>
+		<auth-method>BASIC</auth-method>
+		<realm-name>file</realm-name>
+	</login-config>
+	<security-role>
+		<role-name>Authorized</role-name>
+	</security-role>
+</web-app>

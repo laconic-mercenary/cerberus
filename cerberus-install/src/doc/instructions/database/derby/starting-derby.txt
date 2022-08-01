@@ -1,0 +1,5 @@
+
+To start the derby database that comes with Glassfish, run the following command in the 
+glassfish bin directory:
+
+$ asadmin start-database

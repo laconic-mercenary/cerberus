@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0"
+	xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+	<persistence-unit name="h2JPA" transaction-type="JTA">
+
+		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+
+		<!-- this jndi is created in the web container -->
+		<jta-data-source>jdbc/h2JPA</jta-data-source>
+
+		<class>cerberus.core.persistence.entities.PingInfo</class>
+		<class>cerberus.core.persistence.entities.KeyValuePairProperty</class>
+		<class>cerberus.core.persistence.entities.FileManagerEntry</class>
+		<class>cerberus.core.persistence.entities.FileManager</class>
+		<class>cerberus.core.persistence.entities.TargetDirectory</class>
+
+		<!-- unfortunately, these need to be listed for embedded derby it appears -->
+		<exclude-unlisted-classes>false</exclude-unlisted-classes>
+
+		<properties>
+			<!-- EclipseLink specific properties -->
+			<property name="eclipselink.ddl-generation" value="none" />
+			<property name="eclipselink.debug" value="ALL" />
+			<property name="eclipselink.weaving" value="static" />
+			<property name="eclipselink.logging.level" value="INFO" />
+			<property name="eclipselink.logging.level.sql" value="INFO" />
+			<property name="eclipselink.logging.level.cache" value="INFO" />
+			<property name="javax.persistence.jdbc.user" value="cerberus_user" />
+			<property name="javax.persistence.jdbc.password" value="IDKFAIDDQD" />
+		</properties>
+
+	</persistence-unit>
+</persistence>

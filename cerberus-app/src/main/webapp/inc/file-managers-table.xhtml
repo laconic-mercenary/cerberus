@@ -1,0 +1,24 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<h:panelGroup layout="block" styleClass="file-managers-datatable-wrapper">
+		<h:outputStylesheet>
+			.file-managers-datatable td {
+				word-wrap: break-word;
+			}
+		</h:outputStylesheet>
+
+		<p:dataTable styleClass="file-managers-datatable" var="fm"
+			value="#{fileManagersTableModel.fileManagers}">
+			<p:column headerText="Classname">#{fm.fileManagerEntry.className}</p:column>
+			<p:column headerText="Directory">#{fm.targetDirectory.absolutePath}</p:column>
+			<p:column headerText="Interval">#{fm.interval}</p:column>
+			<p:column headerText="Enabled">#{fm.enabled}</p:column>
+		</p:dataTable>
+	</h:panelGroup>
+
+</ui:composition>

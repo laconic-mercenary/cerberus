@@ -1,0 +1,58 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>cerberus</groupId>
+	<artifactId>cerberus</artifactId>
+	<version>2.4.4-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>Cerberus Server</name>
+
+	<modules>
+		<module>cerberus-resources</module>
+		<module>cerberus-core</module>
+		<module>cerberus-ejb</module>
+		<module>cerberus-app</module>
+		<module>cerberus-ear</module>
+		<module>cerberus-install</module>
+	</modules>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<jodatime.version>2.3</jodatime.version>
+		<com.frontier.lib.version>0.4.0</com.frontier.lib.version>
+		<javase.version>1.8</javase.version>
+		<javaee.version>7.0</javaee.version>
+		<java.ejb.version>3.1</java.ejb.version>
+		<com.sun.jsf.version>2.2</com.sun.jsf.version>
+		<javax.servlet.version>3.1</javax.servlet.version>
+		<javax.servlet.jstl.version>1.2</javax.servlet.jstl.version>
+		<junit.version>4.11</junit.version>
+		<org.mockito.version>1.9.5</org.mockito.version>
+		<org.powermock.version>1.5.1</org.powermock.version>
+		<org.slf4j.version>1.5.6</org.slf4j.version>
+		<org.primefaces.version>5.1</org.primefaces.version>
+		<org.primefaces.theme.version>1.0.10</org.primefaces.theme.version>
+		<org.apache.commons.fileupload.version>1.3</org.apache.commons.fileupload.version>
+		<org.apache.commons.io.version>2.4</org.apache.commons.io.version>
+		<org.apache.log4j.version>1.2.17</org.apache.log4j.version>
+		<org.eclipselink.jpa.version>2.5.2</org.eclipselink.jpa.version>
+		<org.apache.derby.version>10.10.1.1</org.apache.derby.version>
+		<com.google.guava.version>16.0.1</com.google.guava.version>
+		<org.atmosphere.version>2.2.2</org.atmosphere.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>javax</groupId>
+			<artifactId>javaee-api</artifactId>
+			<version>${javaee.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>${org.apache.log4j.version}</version>
+		</dependency>
+	</dependencies>
+</project>

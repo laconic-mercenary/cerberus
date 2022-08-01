@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+	<appender name="cerberus_ejb_logger" class="org.apache.log4j.RollingFileAppender">
+		<param name="File" value="/opt/appsrv/logs/cerberus-enterprise.log" />
+		<param name="Append" value="TRUE" />
+		<param name="MaxFileSize" value="3MB" />
+		<param name="MaxBackupIndex" value="5" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="conversionPattern" value="%d %-5p  [%c{1}] %m %n" />
+		</layout>
+	</appender>
+
+	<appender name="cerberus_app_logger" class="org.apache.log4j.RollingFileAppender">
+		<param name="File" value="/opt/appsrv/logs/cerberus-app.log" />
+		<param name="Append" value="TRUE" />
+		<param name="MaxFileSize" value="3MB" />
+		<param name="MaxBackupIndex" value="5" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="conversionPattern" value="%d %-5p  [%c{1}] %m %n" />
+		</layout>
+	</appender>
+
+	<appender name="cerberus_core_logger" class="org.apache.log4j.RollingFileAppender">
+		<param name="File" value="/opt/appsrv/logs/cerberus.log" />
+		<param name="Append" value="TRUE" />
+		<param name="MaxFileSize" value="3MB" />
+		<param name="MaxBackupIndex" value="5" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="conversionPattern" value="%d %-5p  [%c{1}] %m %n" />
+		</layout>
+	</appender>
+
+	<appender name="cerberus_purge_logger" class="org.apache.log4j.RollingFileAppender">
+		<param name="File" value="/opt/appsrv/logs/cerberus-purge.log" />
+		<param name="Append" value="TRUE" />
+		<param name="MaxFileSize" value="2MB" />
+		<param name="MaxBackupIndex" value="4" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="conversionPattern" value="%d %-5p  [%c{1}] %m %n" />
+		</layout>
+	</appender>
+
+	<logger name="cerberus.core.files.impl.managers.purge"
+		additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="cerberus_purge_logger" />
+	</logger>
+
+	<logger name="cerberus.ejb" additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="cerberus_ejb_logger" />
+	</logger>
+
+	<logger name="cerberus.app" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="cerberus_app_logger" />
+	</logger>
+
+	<logger name="cerberus" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="cerberus_core_logger" />
+	</logger>
+
+</log4j:configuration>

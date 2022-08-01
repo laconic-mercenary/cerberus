@@ -1,0 +1,52 @@
+CERBERUS STARTUP GUIDE
+(C) 2014 Matt Stebbing
+v2.3.0
+
+The following document outlines how to start using the cerberus application.
+
+It assumes the following:
+
+* An installation of Glassfish is on the system 
+
+1) Ensure the database is setup (not running though)
+	see the doc/instructions/database/h2/setting-up-h2-for-cerberus tutorial
+
+2) Glassfish is prepared (see the install.txt file)
+	
+3) Appropriate directories are created (recommended)
+	NOTE: directories are created automatically if they don't exist by cerberus
+	they ARE NOT created automatically by the landing-zone app though
+	fortunately, there is only one, the landing zone directory.
+	
+	In unix, this is currently setup to be /opt/lz
+	In Windows, this is D:\opt\lz
+
+	
+4) Deploy Cerberus and Landing-Zone
+
+	NOTE:
+	this process can be done manually through the glassfish admin console (localhost:4848) 
+	but it is highly encouraged to run the scripts instead
+	
+	Run the appropriate scripts found in the cerberus-install project.
+	
+	The order should be
+	
+	1) start database server (on unix, a service)
+	2) create the cerberus schema (schema.sql)
+	3) populate the tables / run the loaders (loaders.sql)
+	4) start glassfish server
+	5) deploy the cerberus ear file
+	6) deploy the landing-zone war file
+	
+X) Shutting Down
+
+	Again, use the shutdown/cleanup scripts provided.
+	
+	1) undeploy cerberus and the landing-zone
+	2) stop and kill the database service
+		NOTE: the actual database (a file) will not be deleted
+		it is highly recommended that this is done.
+		(EX: /opt/db/h2/bin/CERBERUS_MAIN.h2.db)
+	3) shutdown glassfish
+	

@@ -1,0 +1,282 @@
+CERBERUS SERVER INSTALLATION GUIDE
+v2.3.0
+(C) 2014 Matt Stebbing
+
+The following are the instructions on how to install the Cerberus server
+Software. 
+
+The following components are required to run the Cerberus application
+
+STAND-ALONE SOFTWARE
+
+1) Glassfish Open Source edition v3.1.2.2 or v4.x
+2) Java DB / Derby In-Memory Database (comes with Glassfish)
+3) landing-zone (landing-zone-2.0.1.war)
+4) Java SE 1.7
+5) H2 Database
+
+DEPENDENCY LIBRARIES
+
+1) PrimeFaces 4.0
+2) Apache LOG4J
+3) Joda Time
+4) Java 1.7 SE, EE
+5) Google Guava EventBus
+
+NETWORK REQUIREMENTS
+
+Cerberus operates on the LAN - but the web application can be accesible to the outside.
+Firewall modifications must be in place so that the components can communicate on the LAN.
+
+The monitor client, currently, can only be seen on the LAN.
+
+FILE SYSTEM REQUIREMENTS
+
+Previously, several directories with the appropriate write permissions had to be setup 
+so that Cerberus can receive uploaded images and place them in locations that are accesible. 
+
+The following directories are required:
+
+1) Location where the landing-zone application can receive image files
+2) Location where cerberus can move the files so the web app can see them.
+3) Location where cerberus and landing-zone log files can be placed and be written to.
+
+All directories are (with the exception of the landing zone that the landing-zone application creates)
+are automatically created if they don't exist. These directories are configured in the database 
+loaders (read by Cerberus at runtime)
+
+There are WINDOWS and UNIX versions of each loader file to make it easier.
+
+JAVA 1.7/1.8
+
+When Java 1.x is downloaded and setup on the file system...
+Ensure the following environment variables are set:
+
+JAVA_HOME and PATH
+
+If not, execute
+
+	$ export JAVA_HOME=/path/to/jdk/directory
+	AND THEN
+	$ export PATH=$PATH:$JAVA_HOME/bin
+	
+	(recommended to put this in the /etc/profile to that it will export these on restart) 
+	
+Then, as a test, run:
+
+	$ java -version
+	
+which should yield the version of the JDK installed.
+
+(NOTES FOR UBUNTU SERVER)
+- Encountered an odd issue with Ubuntu Server 12.04 where, even after the environment variables
+were in place, the java executable could not be found. To fix this perform the following
+
+	$ apt-get install libc6-i386
+	
+- Note, this was not experienced with versions after v12.04
+
+
+GLASSFISH
+
+With Java installed, a configuration file in Glassfish needs to be modified to point
+to the Java installation directory.
+
+Modify the $GLASSFISH_INSTALL_DIR/glassfish/config/asenv.conf
+
+And add the following entry:
+
+	AS_JAVA="/path/to/jdk/dir"
+	
+	(this should not point to the bin folder, just the top level jdk directory).
+
+Glassfish by itself will not support Cerberus, it needs JDBC connection pools to be setup
+in the console - specifically a DERBY in-memory database instance must be setup. It uses this
+to track Monitor Clients through ping information.
+
+To get the steps in doing this, see the doc/glassfish/h2/creating-glassfish-connection-pools file
+in this project.
+
+To access the Glassfish admin console,
+
+	$ /path/to/gf4/bin/asadmin start-domain
+	
+Then open a browser and connect to: http://localhost:4848
+
+(NOTE: if accessing this from a different machine, secure access must be setup through the asadmin utility).
+
+First, you must setup an admin user before enabling secure access. To do so, run
+
+$ asadmin change-admin-password
+
+and then follow the prompts
+
+Second, run the following
+
+$ asadmin enable-secure-admin
+
+it should prompt you. When finished, you should be able to access the GF admin console web app
+from a different local machine.
+
+(END NOTE)
+
+A connection pool to the database should be setup (can be done later, see the doc/instructions/database/h2 dir
+for instructions
+
+If the database is actually running, feel free to test the connection by 
+clicking the Ping button. (It won't be if you use the scripts (recommended) to start cerberus. 
+(NOTE: if this fails, see below)
+
+
+GLASSFISH SECURITY
+
+WebApp-specific security must be configured in 2 locations:
+> web.xml
+> Glassfish Admin console
+
+For the web.xml, the following is an example:
+
+	<security-constraint>
+		<display-name>AuthorizationConstraint</display-name>
+		<web-resource-collection>
+			<web-resource-name>AuthenticationResource</web-resource-name>
+			<url-pattern>/*</url-pattern>
+			<http-method>GET</http-method>
+			<http-method>POST</http-method>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>Authorized</role-name>
+		</auth-constraint>
+		<user-data-constraint>
+			<transport-guarantee>NONE</transport-guarantee>
+		</user-data-constraint>
+	</security-constraint>
+	<login-config>
+		<auth-method>BASIC</auth-method>
+		<realm-name>file</realm-name>
+	</login-config>
+	<security-role>
+		<role-name>Authorized</role-name>
+	</security-role>
+	
+	- The role-name entry is the important one here.
+	
+	(NOTE: there must also apparently be a sun-web.xml (which is GF specific))
+	
+Creating Authroized User: 
+	> In the Glassfish Admin Console:
+	
+		- the authentication is configured under a named configuration entry under
+			Configurations > default-config > Security
+		- If you expand Security, you can find Realms
+			in this case, file is the most popular one.
+			
+		- Go to Security > Realms > file 
+		- click on Manage Users
+		- Add new File Users:
+			- Add User ID (whatever it is, but this is your login so remember it) and the group name (Authorized)
+			- Add password as well
+		- Restart the DAS just in case
+		
+	> On the Command Line:
+		
+		$ asadmin create-file-user --user admin --passwordfile /opt/appsrv/glassfish4.1/AS_ADMIN_PASSWORD 
+			--groups Authorized stebbinm
+			
+		- you will then be prompted to specify stebbinm's password
+		- the --user is for the DAS admin
+		- the --password file is the DAS admin's password and it's format is
+			AS_ADMIN_PASSWORD=<password here>
+			
+		this will prompt you for the user's password
+		1qa2ws...
+		 
+
+(info only) IF USING A DERBY DATABASE (which you probably are using H2 instead)
+
+In LINUX, a security exception needs to be put in place so that glassfish can connect
+to the Derby database as localhost. This is a file-based policy that can be found at 
+
+$JAVA_HOME/jre/lib/security/java.policy
+
+The following entry will need to be made (at the bottom):
+
+grant {
+	permission java.net.SocketPermission "localhost:1527","listen";
+};
+
+
+
+CERBERUS CONFIGURATION
+
+The following config files should be modified/adjusted depending on where 
+the application will be deployed at:
+
+> cerberus-resources (project)
+	/src/main/resources/log4j.xml
+		- this controls the location of the log files
+		- controlls the log levels (DEBUG, INFO, etc).
+	
+(DEPRECATED) > cerberus-core (DEPRECATED - configuration comes from the database scripts now)
+	/src/main/resources/CameraImageManager.properties
+		- controls how images are soaked up 
+	"/cfms.csv
+		- controls what file managers target what directories
+	"/timed_managers.properties
+		- controls how often some file managers will execute their service
+		
+(DEPRECATED) > cerberus-app
+	- /src/main/resources/servlets/ImageServlet.properties
+		- controls where images that are ready to be displayed will be read from (what directory).
+		
+
+
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+		
+LANDING ZONE CONFIGURATION
+
+The landing-zone application (.war) is deployed along-side the cerberus ear. It is the servlet
+that handles file uploads from any clients. Currently it is NOT configured to use a database
+to determine where to place files. Rather it uses .properties files. The cerberus-install
+project contains 2 verions, 1 for unix (/opt/lz), 1 for windows (D:\opt\lz)
+
+NOTE: Cerberus DEPENDS on this application being deployed.
+NOTE: Directories mentioned in the configuration should be created before deployment occurs
+
+It also has configuration files that need attention:
+
+/src/main/resources/log4j.xml
+	- again, where is the log file dumped to
+	
+" /resources/laws/laws.properties
+	- this is where the various rules are established for when a file is received.
+	- this shouldn't need to be changed by default.
+	
+" /resources/reception/reception.properties
+	- determines where the landing zone is for received files
+	- there are UNIX and WINDOWS versions of this file for a guide.
+	
+DEPLOYMENT
+
+(WINDOWS)
+Have an environment variable named APPSRV that points to the bin directory of the GF installation
+
+It is highly recommended that the deployment and undeployment process is automated, via a shell script or something.
+The cerberus-install project provides scripts for both Windows and Unix environments.
+
+The deployment script should do the following (in this order):
+
+1) start H2 database, create schema, run loaders
+2) asadmin start-domain
+3) asadmin deploy --name cerberus /path/to/cerberus*.ear
+4) asadmin deploy --name landing-zone --contextroot landing-zone /path/to/landing-zone*(unix|windows)*.war
+
+The undeployment script should do the following (in this order, though not necessarily in the strict-sense):
+
+1) asadmin undeploy cerberus
+2) asadmin undeploy landing-zone
+3) asadmin restart-domain (optional - but just making sure resources are cleared)
+4) asadmin stop-database
+5) shutdown H2 database

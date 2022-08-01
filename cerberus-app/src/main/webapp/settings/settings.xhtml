@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="../common/layout.inc.xhtml">
+	<ui:define name="content">
+
+		<h:panelGroup layout="block">
+			<p:panel id="file-managers-panel" header="File Managers"
+				toggleable="true" collapsed="true">
+				<ui:include src="../inc/file-managers-table.xhtml"></ui:include>
+			</p:panel>
+		</h:panelGroup>
+		<h:panelGroup layout="block">
+			<p:panel id="kvp-properties-panel" header="App Properties"
+				toggleable="true" collapsed="true">
+				<ui:include src="../inc/kvp-properties-table.xhtml"></ui:include>
+			</p:panel>
+		</h:panelGroup>
+		<h:panelGroup layout="block">
+			<p:panel id="home-navigation-panel" header="Menu" toggleable="false">
+				<h:form id="navigation-form"
+					style="width: 100%; text-align: center;">
+					<p:commandButton id="nav-home-button" value="Home" ajax="false"
+						action="console/index.xhtml?faces-redirect=true"></p:commandButton>
+				</h:form>
+			</p:panel>
+		</h:panelGroup>
+
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,1 @@
+java -cp D:\opt\db\h2\bin\h2-1.3.176.jar org.h2.tools.Server -tcp -tcpPort 9092 -tcpAllowOthers

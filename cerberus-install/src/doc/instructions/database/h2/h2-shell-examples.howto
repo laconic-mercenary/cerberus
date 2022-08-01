@@ -1,0 +1,21 @@
+
+This will launch the h2 database server which users can connect on port 9092
+The tcpAllowOthers flag will allow different machines to connect on this port.
+This command will block if ran from the shell / command line.
+
+$ java -cp /path/to/h2/bin/h2-1.3.176.jar org.h2.tools.Server -tcp -tcpPort 9092 -tcpAllowOthers
+
+
+If this is ran for the first time after the Server is launched (see above command) then this will do the following:
+
+1) Create a database directory in /opt/db with the database name that you provide
+2) Will create the user with the password provided
+3) Run the script against the newly created database (i.e an sql script). 
+
+$ java -cp /path/to/h2/bin/h2-1.3.176.jar org.h2.tools.RunScript -user <username> -password <password> -url jdbc:h2:tcp://localhost:9092//opt/db/<database name> -script /opt/db/schema.sql
+
+
+This will shutdown the server. NOTE: that the database file created with the above command
+will still remain. If you wish to DROP the database, simply delete the file created.
+
+$ java -cp /opt/db/h2/bin/h2-1.3.176.jar org.h2.tools.Server -tcpShutdown tcp:localhost:9092

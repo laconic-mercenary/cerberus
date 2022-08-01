@@ -1,0 +1,66 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>cerberus</groupId>
+		<artifactId>cerberus</artifactId>
+		<version>2.4.4-SNAPSHOT</version>
+	</parent>
+
+	<packaging>ear</packaging>
+	<artifactId>cerberus-ear</artifactId>
+	<name>Ceberus Enterprise Archive</name>
+	<description>Contains all top level modules</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>cerberus</groupId>
+			<artifactId>cerberus-app</artifactId>
+			<version>${project.parent.version}</version>
+			<type>war</type>
+		</dependency>
+		<dependency>
+			<groupId>cerberus</groupId>
+			<artifactId>cerberus-ejb</artifactId>
+			<version>${project.parent.version}</version>
+			<type>ejb</type>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<finalName>cerberus-${project.parent.version}</finalName>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>${javase.version}</source>
+					<target>${javase.version}</target>
+					<encoding>${project.build.sourceEncoding}</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-ear-plugin</artifactId>
+				<configuration>
+					<generateApplicationXml>true</generateApplicationXml>
+					<!-- this is important, else the ejbs can't see any dependencies -->
+					<defaultLibBundleDir>lib</defaultLibBundleDir>
+					<modules>
+						<webModule>
+							<groupId>cerberus</groupId>
+							<artifactId>cerberus-app</artifactId>
+							<moduleId>cerberus-app</moduleId>
+							<contextRoot>/cerberus</contextRoot>
+						</webModule>
+						<ejbModule>
+							<groupId>cerberus</groupId>
+							<artifactId>cerberus-ejb</artifactId>
+							<moduleId>cerberus-ejb</moduleId>
+						</ejbModule>
+					</modules>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

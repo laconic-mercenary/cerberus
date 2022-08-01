@@ -1,0 +1,84 @@
+2.1.2: 
+	- fixed Google EventBus exception when undeploying the ear file. Was not passing the proper
+	key into the map.remove()
+	- added support for clients that are localhost-based. 
+2.2
+	- added support for motion detection commands to be received
+		- client puts 'motion' in the url parameters in the post
+		- using web sockets, this gets pushed to cerberus and an indicator will blink on the web app
+	- upped session timeout from 30 to 55 minutes
+2.2.1
+	- added support for automatically creating directories if they don't exist
+		inside the CameraImageManager
+2.2.2
+	- added further automatic directory creation for the ImageServlet
+	- cleaned up code
+2.2.3
+	- added jquery onload event to the console to clear away any stale PINGs
+	- added comments in the java code
+	- updated documentation for installation instructions
+	- added audio support (beep) for when a motion event comes in (console.js)
+	
+2.3.0
+	- (big) switched from using .properties files in many places to using a database
+		at first tried to use the built-in javadb/derby database - this was met with 
+		great frustration when it came to managing users between gf and derby. Spent 
+		several days on it. So, switched to the H2 db (not in-memory, but works well with java)
+		and was up in several hours.
+	- (big) added cerberus-install project where the project can be setup and deployed, 
+		all from within the unpacked tar or zip file it produces.
+	- created scripts to automate (as much as possible) the cerberus deployment
+	- made 2 versions of the landing zone (win and unix) 2nd class citizens of this project
+		they are now packed with the install tar
+	- swapped out the Properties service with the Persistence service
+	
+2.3.1
+	- gave file managers their own table, rather than have that funky pipe-delim format
+	- decreased the prime faces idletimeout value to account for web socket disconnects over time
+	- added new FilteredTimedManager class
+	- added a purge that will remove images from the image directory but leave a handful of them
+		(8) so it doesn't interfere too much with file i/o 
+	
+2.3.1.1
+	- gave ability to enable/disable the purge from the database
+	
+2.3.1.2
+	- ran FindBugs program and addressed the following:
+		> incorrect way to populate the cached DIRECTORIES list for the FileManagers
+		> possible NULL dereference situation with the RequestGateKeeper.java
+	- added static final Strings for some performance critical log messages
+	- fixed concurrent mod exception in event bus during dispose()
+	
+2.4.0.0
+	- added capability to view images sent by the monitor clients when motion was detected (UI updates)
+	- made file name creation faster in the CameraImageManager
+	- removed all ManagedBean annos and replaced with Named (except for application scoped gateways)
+
+2.4.1
+	- normalized the database a bit more
+	- added new entities to support that normalization
+	- refactored the FileManager interface:
+		- enable/disable the manager (only on startup though)
+		- is the FileManager handling files? yes/not
+			- one that does not is the PingPurge for example
+			
+2.4.2
+	- upgraded to target the following:
+		PrimeFaces from 4.0 to 5.0
+		Java SE 7 to 8
+		Glassfish 4.0 to 4.1
+	- should still be backwards compatible
+	- adjusted growl message
+	- removed console.css stylesheet
+	- shrank the Stand By image a bit
+	
+2.4.3
+	- upgraded the following
+		PrimeFaces from 5.0 to 5.1
+		Atmosphere from 2.1.3 to 2.2.2
+	- changed the directories in the db loaders
+		ex: /opt/apps/cerberus/lz instead of /opt/lz
+	- Upgraded from java.io.File to java.nio.Path / java.nio.Files
+		> everywhere except the ImageServlet
+	- separated the random stamp and the timestamp for files: previously a random stamp was added to the timestamp
+	

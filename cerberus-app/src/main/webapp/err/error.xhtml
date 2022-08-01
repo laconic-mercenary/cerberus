@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+<h:head>
+	<h:outputStylesheet>
+		body {
+			background: black;
+		}
+		
+		#main-wrapper {
+			width: 85%;
+			margin: auto;
+		}
+		
+		#footer-wrapper {
+			text-align: center;
+		}
+		
+		.light-label {
+			color: white;
+		}
+	</h:outputStylesheet>
+</h:head>
+<h:body>
+	<div id="main-wrapper">
+		<div id="content-wrapper" class="layout-border">
+			<h:panelGroup id="errors-panel">
+				<p:outputLabel styleClass="light-label"
+					value="Resource not available."></p:outputLabel>
+				<br />
+				<p:outputLabel styleClass="light-label"
+					value="Status code: #{requestScope['javax.servlet.error.status_code']}" />
+				<br />
+			</h:panelGroup>
+		</div>
+	</div>
+</h:body>
+</html>
